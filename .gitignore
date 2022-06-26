@@ -1,0 +1,16 @@
+*.ghw
+*.jou
+*.log
+*.pb
+*.vdb
+*.rlx
+*.cf
+*.str
+*.ods
+
+.hdl_checker/*
+.Xil/
+work
+captures
+__pycache__/
+
