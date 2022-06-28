@@ -131,14 +131,34 @@ def print_freq_dict_array(freq_dict_array, raw_freq):
         print('sum_length: ' + str(freq_dict['sum_length']))
         print()
 
-def gen_spectrum(sig, nfft, fs):
-    sp = fft(sig, nfft)*fs/nfft
+def gen_half_spectrum(sig, nfft, fs):
+    sp,freq = gen_full_spectrum(sig,nfft,fs)
     sp = sp[0:int(nfft/2)]
-    freq = fftfreq(nfft, 1/fs)
     freq = freq[0:int(nfft/2)]
     return sp,freq
 
-def plot_spectrum(sp, freq, sp_norm, freq_norm, fs):
+def gen_full_spectrum(sig, nfft, fs):
+    sp = fft(sig, nfft)*fs/nfft
+    freq = fftfreq(nfft, 1/fs)
+    return sp,freq
+
+def plot_window_spectrum(sp, freq, sp_r, freq_r):
+    plt.subplot(2,1,1)
+    sp = fftshift(sp)
+    freq = fftshift(freq)
+    amp = 20*np.log10(np.abs(sp)/max(np.abs(sp)))
+    plt.plot(freq, amp)
+    plt.title('Floating point (ideal) case')
+
+    plt.subplot(2,1,2)
+    sp_r = fftshift(sp_r)
+    freq_r = fftshift(freq_r)
+    amp_r = 20*np.log10(np.abs(sp_r)/max(np.abs(sp_r)))
+    plt.plot(freq_r, amp_r)
+    plt.title('Fixed point (actual) case')
+    plt.show()
+
+def plot_spectrum(fs, sp, freq, sp_norm, freq_norm):
     plt.subplot(2,1,1)
     plt.plot(freq,abs(sp))
     plt.title('ideal fft response')
