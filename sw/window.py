@@ -13,10 +13,22 @@ def approximate_b(A_sl):
     return b
 
 def fixed_point_kaiser(M, beta, nbits):
-    kaiser_win = (2**nbits)*kaiser(M,beta)
+    kaiser_win = (2**nbits-1)*kaiser(M,beta)
     #kaiser_win = np.round((2**nbits)*kaiser(M,beta))
     return kaiser_win
 
 def kaiser(M, beta, sym=False):
     win = signal.windows.kaiser(M, beta, sym=False)
     return win
+
+def write_out_window(win, fname, nbits):
+    print('writing out coefficient file ' + fname)
+    win = np.round(win)
+    assert max(win) < 2**nbits, 'ERROR: Maximum value for window cannot be contained in nbits. Reduce window amplitude or increase bit width'
+    win = [ int(coe) for coe in win ]
+    with open(fname,'w') as f_handle:
+        print(f'type lut is array (natural range 0 to {len(win)-1}) of std_logic_vector({nbits-1} downto 0);', file=f_handle)
+        print(f'constant window_coe : lut := (', file=f_handle)
+        for coe in win[:-1]:
+            print(f'"{coe:0>{nbits}b}",', file=f_handle)
+        print(f'"{win[-1]:0>{nbits}b}");', file=f_handle)
