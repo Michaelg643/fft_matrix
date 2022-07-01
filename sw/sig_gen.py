@@ -39,7 +39,7 @@ def plot_sig(sig, fs, frac=1):
     if np.iscomplexobj(sig):
         plt.subplot(2,1,1)
     
-    plt.plot(time_idx_arr, sig_re[samp_idx_arr])
+    plt.stem(time_idx_arr, sig_re[samp_idx_arr])
     
     if np.iscomplexobj(sig):
         sig_im = sig.imag
