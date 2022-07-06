@@ -30,7 +30,7 @@ def gen_chirp(start_freq, stop_freq, dtype, duration, fs, filename=None):
 
     return sig
 
-def plot_sig(sig, fs, frac=1):
+def plot_sig(sig, fs, frac=1, title=None):
     num_samps = int(frac*len(sig))
     samp_idx_arr = np.arange(num_samps)
     time_idx_arr = samp_idx_arr/fs
@@ -40,6 +40,8 @@ def plot_sig(sig, fs, frac=1):
         plt.subplot(2,1,1)
     
     plt.stem(time_idx_arr, sig_re[samp_idx_arr])
+    if title is not None:
+        plt.title(title)
     
     if np.iscomplexobj(sig):
         sig_im = sig.imag
@@ -138,24 +140,26 @@ def gen_half_spectrum(sig, nfft, fs):
     return sp,freq
 
 def gen_full_spectrum(sig, nfft, fs):
-    sp = fft(sig, nfft)*fs/nfft
+    sp = fft(sig, nfft, axis=0)*fs/nfft
     freq = fftfreq(nfft, 1/fs)
     return sp,freq
 
-def plot_window_spectrum(sp, freq, sp_r, freq_r):
-    plt.subplot(2,1,1)
+def plot_window_spectrum(sp, freq, sp_r=None, freq_r=None):
+    if sp_r is not None:
+        plt.subplot(2,1,1)
     sp = fftshift(sp)
     freq = fftshift(freq)
-    amp = 20*np.log10(np.abs(sp)/max(np.abs(sp)))
+    amp = 20*np.log10(np.abs(sp)/np.max(np.abs(sp)))
     plt.plot(freq, amp)
     plt.title('Floating point (ideal) case')
 
-    plt.subplot(2,1,2)
-    sp_r = fftshift(sp_r)
-    freq_r = fftshift(freq_r)
-    amp_r = 20*np.log10(np.abs(sp_r)/max(np.abs(sp_r)))
-    plt.plot(freq_r, amp_r)
-    plt.title('Fixed point (actual) case')
+    if sp_r is not None:
+        plt.subplot(2,1,2)
+        sp_r = fftshift(sp_r)
+        freq_r = fftshift(freq_r)
+        amp_r = 20*np.log10(np.abs(sp_r)/max(np.abs(sp_r)))
+        plt.plot(freq_r, amp_r)
+        plt.title('Fixed point (actual) case')
     plt.show()
 
 def plot_spectrum(fs, sp, freq, sp_norm, freq_norm):

@@ -12,7 +12,8 @@ fs = 2
 b = approximate_b(sll)
 win = fixed_point_kaiser(M, b, nbits)
 fname = f'kaiser_win_{M:d}_pts_{b:.0f}_beta.vhd'
-write_out_window(win, fname, nbits)
+cname = 'C_KAISER_{M:d}_LUT'
+write_out_window(win, fname, nbits, cname)
 sp, freq = sg.gen_full_spectrum(win, nfft, fs)
 sp_r, freq_r = sg.gen_full_spectrum(np.round(win), nfft, fs)
 sg.plot_window_spectrum(sp, freq, sp_r, freq_r)

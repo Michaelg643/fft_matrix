@@ -18,7 +18,7 @@ def fixed_point_kaiser(M, beta, nbits):
     return kaiser_win
 
 def kaiser(M, beta, sym=False):
-    win = signal.windows.kaiser(M, beta, sym=True)
+    win = signal.windows.kaiser(M, beta, sym)
     return win
 
 def fixed_point_kaiser2(M, beta, nbits):
@@ -32,14 +32,30 @@ def kaiser2(M, beta):
     win = special.i0(arg)/special.i0(beta)
     return win
 
-def write_out_window(win, fname, nbits):
+def write_out_window(win, fname, nbits, cname):
     print('writing out coefficient file ' + fname)
     win = np.round(win)
     assert max(win) < 2**nbits, 'ERROR: Maximum value for window cannot be contained in nbits. Reduce window amplitude or increase bit width'
     win = [ int(coe) for coe in win ]
+    for coe in range(len(win)):
+        if win[coe] < 0:
+            win[coe] = (win[coe] ^ 2**nbits-1) + 1
     with open(fname,'w') as f_handle:
         print(f'type lut is array (natural range 0 to {len(win)-1}) of std_logic_vector({nbits-1} downto 0);', file=f_handle)
-        print(f'constant window_coe : lut := (', file=f_handle)
+        print(f'constant {cname} : lut := (', file=f_handle)
         for coe in win[:-1]:
-            print(f'"{coe:0>{nbits}b}",', file=f_handle)
-        print(f'"{win[-1]:0>{nbits}b}");', file=f_handle)
+            print(f'"{abs(coe):0>{nbits}b}",', file=f_handle)
+        print(f'"{abs(win[-1]):0>{nbits}b}");', file=f_handle)
+
+def write_out_coe(response, fname):
+    print('Writing out coefficient file as string of ints: ' + fname)
+    response = np.round(response)
+    response = [ int(coe) for coe in response ]
+    with open(fname, 'w') as f_handle:
+        print('radix=10;', file=f_handle)
+        print('coefdata=', file=f_handle)
+        for coe in response[:-1]:
+            print(f'{coe},', file=f_handle)
+        print(f'{response[-1]};', file=f_handle)
+
+
