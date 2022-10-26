@@ -34,10 +34,10 @@ def fixed_point_hilbert(length, sll, nbits):
     return fixed_hilbert
 
 if __name__ == "__main__":
-    n = 125
+    n = 20
     hilbert_len = int(4*n+3) # per FIR compiler rules for hilbert transform length
-    start_freq = 20e0
-    stop_freq = 20e3
+    start_freq = 1020e0
+    stop_freq = 21e3
     dtype = 'real'
     duration = 1
     fs = 44100
@@ -46,7 +46,7 @@ if __name__ == "__main__":
     sll = 40
     nbits = 16
     ds_factor = 2
-    nfft = 32768
+    nfft = 32768*4
     nfft_ds = int(nfft/ds_factor)
 
     hilbert = discrete_hilbert(hilbert_len, sll)
@@ -64,10 +64,10 @@ if __name__ == "__main__":
     isig = np.convolve(rsig, hilbert)
     print('Length of rsig: ' + str(len(rsig)))
     print('Length of isig: ' + str(len(isig)))
-    #plt.plot(np.arange(rsig_l), rsig, label='Real (original) signal')
-    #plt.plot(np.arange(rsig_l), isig[samp_off:len(isig)-samp_off], label='Imaginary (hilbert transform of original) signal')
-    #plt.legend(loc="upper right")
-    #plt.show()
+    plt.plot(np.arange(rsig_l), rsig, label='Real (original) signal')
+    plt.plot(np.arange(rsig_l), isig[samp_off:len(isig)-samp_off], label='Imaginary (hilbert transform of original) signal')
+    plt.legend(loc="upper right")
+    plt.show()
 
     #fname_vhd = f'hilbert_transform_taps_{hilbert_len}pts_{nbits}b.vhd'
     fname_coe = f'hilbert_transform_taps_{hilbert_len}pts.coe'
